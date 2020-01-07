@@ -40,11 +40,35 @@ Use a list of states then? Something in the lines of `List<CellState>` for:
 
 We won't ever add or remove cells from the grid, so I think a list is good enough.
 
+Eduardo said that all the logic and states should be handled in terms of reducers.
+That is, no game logic abstraction is allowed.
+But that doesn't mean I can't do the abstraction inside an `AppState`.
+So there's that :)
+
+Also, we still need to represent bomb locations.
+Do we do it separately?
+E.g., a `List` for bomb locations and another for cell statuses?
+Shouldn't it be just like a `Cell` then?
+A `Cell` describes itself as a safe tile or one that contains a bomb, and additionally its status?
+This sounds great:
+
+    class Cell {
+        CellState state;
+        CellKind kind;
+    }
+
+    enum CellKind {
+        Safe,
+        Bomb,
+    }
+
+Alright.
+
 ### Fill a grid with mines
 
 In order to fill a grid with mines, do not use a "randomly-selects-cells" algorithm.
 This algorithm doens't have a fixed point (i.e., not guaranteed to halt), because it looks for vacant cells, but when it selects an occupied one, it just ignores it and tries to select another one.
-In practice, it is likely to halt, but it's slow for gid grids nonetheless (although not a requirement here).
+In practice, it is likely to halt, but it's slow for big grids nonetheless (although not a requirement here).
 
 A good approach is the following: fill the first N grid cells with mines, then `shuffle(grid)`.
 This way, the algorithm is linear (fast) and is guaranteed to halt.
