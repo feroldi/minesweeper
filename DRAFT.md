@@ -7,6 +7,8 @@
 3. States: playing, victory, defeat.
 4. User may generate a streaming link so others can watch their game
 
+Q: Should the player be able to set mine spawn amount?
+
 ## Design
 
 ### Grid data structure
@@ -46,6 +48,8 @@ In practice, it is likely to halt, but it's slow for gid grids nonetheless (alth
 
 A good approach is the following: fill the first N grid cells with mines, then `shuffle(grid)`.
 This way, the algorithm is linear (fast) and is guaranteed to halt.
+However, this does not allow for mine spawn probability.
+Q: Should it have a mine spawn probability?
 
 ### Commands
 
