@@ -28,6 +28,16 @@ void main() {
         throwsA(isA<AssertionError>()));
   });
 
+  test("Boards with less or more mines than specified cannot exist", () {
+    final game = makeGame(rows: 2, columns: 2, numMines: 1);
+
+    expect(() => game.generateBoardFromMinePositions(<Pos>[]),
+        throwsA(isA<AssertionError>()));
+
+    expect(() => game.generateBoardFromMinePositions(<Pos>[Pos(x: 0, y: 0), Pos(x: 1, y: 0)]),
+        throwsA(isA<AssertionError>()));
+  });
+
   test("Conversion between positions and indices are row-major", () {
     final game = makeGame(rows: 5, columns: 4, numMines: 0);
 
@@ -238,5 +248,19 @@ void main() {
     expect(flaggedBoard[1].state, equals(PlaceState.flagged));
 
     expect(game.checkGameState(flaggedBoard), GameState.playing);
+  });
+
+  test("Flagged places cannot be revealed", () {
+    final game = makeGame(rows: 1, columns: 1, numMines: 0);
+    final boardStart = game.generateBoardFromMinePositions(<Pos>[]);
+
+    final flaggedBoard = game.togglePlace(
+        boardStart, boardStart[game.positionToIndex(Pos(x: 0, y: 0))]);
+
+    expect(flaggedBoard[0].state, equals(PlaceState.flagged));
+
+    final openedBoard = game.revealPlaces(flaggedBoard, Pos(x: 0, y: 0));
+
+    expect(openedBoard[0].state, equals(PlaceState.flagged));
   });
 }
