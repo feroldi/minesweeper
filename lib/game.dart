@@ -38,6 +38,10 @@ enum PlaceState {
   flagExploded,
 }
 
+bool isRevealedState(PlaceState state) {
+  return const [PlaceState.opened, PlaceState.exploded, PlaceState.flagExploded].contains(state);
+}
+
 /// A set of possible place's kinds, such as [safe] and [mine].
 enum PlaceKind {
   safe,
@@ -240,14 +244,14 @@ class Game {
 
   GameState checkGameState(List<Place> board) {
     final anyTriggeredMine = board.any((place) =>
-        place.kind == PlaceKind.mine && place.state != PlaceState.closed);
+        place.kind == PlaceKind.mine && isRevealedState(place.state));
 
     if (anyTriggeredMine) return GameState.defeat;
 
     final remainingClosedPlaces = board.fold(
         0,
         (numClosed, place) =>
-            numClosed + (place.state == PlaceState.closed ? 1 : 0));
+            numClosed + (isRevealedState(place.state) ? 0 : 1));
 
     return remainingClosedPlaces <= options.numMines
         ? GameState.victory

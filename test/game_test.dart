@@ -221,4 +221,21 @@ void main() {
 
     expect(game.checkGameState(revealedBoard), GameState.defeat);
   });
+
+  test("Flagging a mine should not count as victory nor defeat", () {
+    final game = makeGame(rows: 2, columns: 1, numMines: 1);
+    final board = game.generateBoardFromMinePositions(<Pos>[Pos(x: 1, y: 0)]);
+
+    expect(game.checkGameState(board), GameState.playing);
+
+    final flaggedBoard = game.togglePlace(board, board[game.positionToIndex(Pos(x: 1, y: 0))]);
+
+    expect(flaggedBoard[0].kind, equals(PlaceKind.safe));
+    expect(flaggedBoard[1].kind, equals(PlaceKind.mine));
+
+    expect(flaggedBoard[0].state, equals(PlaceState.closed));
+    expect(flaggedBoard[1].state, equals(PlaceState.flagged));
+
+    expect(game.checkGameState(flaggedBoard), GameState.playing);
+  });
 }
