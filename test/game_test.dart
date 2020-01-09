@@ -228,7 +228,8 @@ void main() {
 
     expect(game.checkGameState(board), GameState.playing);
 
-    final flaggedBoard = game.togglePlace(board, board[game.positionToIndex(Pos(x: 1, y: 0))]);
+    final flaggedBoard =
+        game.togglePlace(board, board[game.positionToIndex(Pos(x: 1, y: 0))]);
 
     expect(flaggedBoard[0].kind, equals(PlaceKind.safe));
     expect(flaggedBoard[1].kind, equals(PlaceKind.mine));

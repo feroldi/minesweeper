@@ -39,7 +39,8 @@ enum PlaceState {
 }
 
 bool isRevealedState(PlaceState state) {
-  return const [PlaceState.opened, PlaceState.exploded, PlaceState.flagExploded].contains(state);
+  return const [PlaceState.opened, PlaceState.exploded, PlaceState.flagExploded]
+      .contains(state);
 }
 
 /// A set of possible place's kinds, such as [safe] and [mine].
