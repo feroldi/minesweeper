@@ -1,16 +1,16 @@
 import 'package:test/test.dart';
 
 import 'package:business/minesweeper/models/board_dimensions.dart';
+import 'package:business/minesweeper/models/board_status.dart';
 import 'package:business/minesweeper/models/game_options.dart';
-import 'package:business/minesweeper/models/game_state.dart';
-import 'package:business/minesweeper/models/game_state_type.dart';
+import 'package:business/minesweeper/models/game_util.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
 import 'package:business/minesweeper/models/pos.dart';
 
-GameState makeGame({int rows, int columns, int numMines}) {
-  return GameState(
+GameUtil makeGame({int rows, int columns, int numMines}) {
+  return GameUtil(
       options: GameOptions(
           dimensions: BoardDimensions(rows: rows, columns: columns),
           numMines: numMines));
@@ -212,7 +212,7 @@ void main() {
     final game = makeGame(rows: 2, columns: 1, numMines: 1);
     final board = game.generateBoardFromMinePositions(<Pos>[Pos(x: 1, y: 0)]);
 
-    expect(game.checkGameStateType(board), GameStateType.playing);
+    expect(game.checkBoardStatus(board), BoardStatus.playing);
 
     final revealedBoard = game.revealPlaces(board, Pos(x: 0, y: 0));
 
@@ -222,14 +222,14 @@ void main() {
     expect(revealedBoard[0].state, equals(PlaceStateType.opened));
     expect(revealedBoard[1].state, equals(PlaceStateType.closed));
 
-    expect(game.checkGameStateType(revealedBoard), GameStateType.victory);
+    expect(game.checkBoardStatus(revealedBoard), BoardStatus.victory);
   });
 
   test("Revealing a mine place means defeat", () {
     final game = makeGame(rows: 2, columns: 1, numMines: 1);
     final board = game.generateBoardFromMinePositions(<Pos>[Pos(x: 1, y: 0)]);
 
-    expect(game.checkGameStateType(board), GameStateType.playing);
+    expect(game.checkBoardStatus(board), BoardStatus.playing);
 
     final revealedBoard = game.revealPlaces(board, Pos(x: 1, y: 0));
 
@@ -239,14 +239,14 @@ void main() {
     expect(revealedBoard[0].state, equals(PlaceStateType.closed));
     expect(revealedBoard[1].state, equals(PlaceStateType.exploded));
 
-    expect(game.checkGameStateType(revealedBoard), GameStateType.defeat);
+    expect(game.checkBoardStatus(revealedBoard), BoardStatus.defeat);
   });
 
   test("Flagging a mine should not count as victory nor defeat", () {
     final game = makeGame(rows: 2, columns: 1, numMines: 1);
     final board = game.generateBoardFromMinePositions(<Pos>[Pos(x: 1, y: 0)]);
 
-    expect(game.checkGameStateType(board), GameStateType.playing);
+    expect(game.checkBoardStatus(board), BoardStatus.playing);
 
     final flaggedBoard =
         game.togglePlace(board, board[game.positionToIndex(Pos(x: 1, y: 0))]);
@@ -257,7 +257,7 @@ void main() {
     expect(flaggedBoard[0].state, equals(PlaceStateType.closed));
     expect(flaggedBoard[1].state, equals(PlaceStateType.flagged));
 
-    expect(game.checkGameStateType(flaggedBoard), GameStateType.playing);
+    expect(game.checkBoardStatus(flaggedBoard), BoardStatus.playing);
   });
 
   test("Flagged places cannot be revealed", () {
