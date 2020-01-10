@@ -1,8 +1,8 @@
 import 'package:business/minesweeper/models/board_dimensions.dart';
 
-class GameOptions {
+class BoardOptions {
   BoardDimensions dimensions;
   int numMines;
 
-  GameOptions({this.dimensions, this.numMines});
+  BoardOptions({this.dimensions, this.numMines});
 }

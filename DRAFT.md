@@ -64,6 +64,25 @@ This sounds great:
 
 Alright.
 
+I need an AppState that has:
+
+* Board
+* Rows
+* Columns
+* Is playing?
+* Game status (playing, victory, defeat)
+
+These are the states that only exist when playing:
+
+* Board
+* Rows
+* Columns
+* Game status
+
+And these are the ones when not playing:
+
+* Is playing?
+
 ### Fill a grid with mines
 
 In order to fill a grid with mines, do not use a "randomly-selects-cells" algorithm.
