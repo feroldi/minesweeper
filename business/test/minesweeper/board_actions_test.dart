@@ -1,7 +1,7 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:test/test.dart';
 
-import 'package:business/minesweeper/actions/actions.dart';
+import 'package:business/minesweeper/actions/board_actions.dart';
 import 'package:business/minesweeper/models/board_dimensions.dart';
 import 'package:business/minesweeper/models/board_state.dart';
 import 'package:business/minesweeper/models/board_status.dart';
