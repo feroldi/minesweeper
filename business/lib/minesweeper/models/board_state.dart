@@ -69,12 +69,20 @@ class BoardState {
 
     if (anyTriggeredMine) return BoardStatus.defeat;
 
-    final remainingClosedPlaces = board.fold(
+    // All mines have to be flagged, and there can't be any closed places.
+    // We could do better without a linear search algorithm, e.g., storing the
+    // flagged and closed places count and updating after toggle/reveal
+    // actions. But this is good enough for this project.
+    final flaggedMinesCount = board.fold(
         0,
         (numClosed, place) =>
-            numClosed + (isRevealedState(place.state) ? 0 : 1));
+            numClosed +
+            (place.state == PlaceStateType.flagged &&
+                    place.kind == PlaceKind.mine
+                ? 1
+                : place.state == PlaceStateType.closed ? -1 : 0));
 
-    return remainingClosedPlaces <= options.numMines
+    return flaggedMinesCount == options.numMines
         ? BoardStatus.victory
         : BoardStatus.playing;
   }

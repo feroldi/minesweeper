@@ -14,3 +14,10 @@ bool isRevealedState(PlaceStateType state) {
     PlaceStateType.wronglyFlagged,
   ].contains(state);
 }
+
+bool isUnreleavedState(PlaceStateType state) {
+  return const [
+    PlaceStateType.closed,
+    PlaceStateType.flagged,
+  ].contains(state);
+}

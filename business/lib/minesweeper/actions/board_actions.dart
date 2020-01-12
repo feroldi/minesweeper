@@ -3,7 +3,9 @@ import 'dart:collection';
 import 'package:async_redux/async_redux.dart';
 import 'package:meta/meta.dart';
 
+import 'package:business/minesweeper/models/board_options.dart';
 import 'package:business/minesweeper/models/board_state.dart';
+import 'package:business/minesweeper/models/board_status.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
@@ -25,6 +27,8 @@ class TogglePlaceAction extends BoardBaseAction {
 
   @override
   BoardState reduce() {
+    if (state.checkStatus() != BoardStatus.playing) return null;
+
     final newBoard = List.of(state.board);
     final originIndex = positionToIndex(place.pos);
     newBoard[originIndex] = Place.toggle(newBoard[originIndex]);
@@ -39,6 +43,8 @@ class RevealPlacesAction extends BoardBaseAction {
 
   @override
   BoardState reduce() {
+    if (state.checkStatus() != BoardStatus.playing) return null;
+
     if (origin.state != PlaceStateType.closed) return null;
 
     if (origin.kind == PlaceKind.mine) {
@@ -95,5 +101,16 @@ class TriggerMineExplosionAction extends BoardBaseAction {
             : place)
         .toList();
     return state.copyWith(board: triggeredMinesBoard);
+  }
+}
+
+class CreateRandomBoardAction extends BoardBaseAction {
+  BoardOptions options;
+
+  CreateRandomBoardAction({this.options});
+
+  @override
+  BoardState reduce() {
+    return BoardState.generateRandomBoard(options: options ?? state.options);
   }
 }
