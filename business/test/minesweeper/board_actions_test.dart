@@ -130,7 +130,7 @@ void main() {
     expect(info.state.board[0].state, equals(PlaceStateType.opened));
   });
 
-  test("A flagged mine should be stated as wrong after defeat", () async {
+  test("A flagged safe place should be stated as wrong after defeat", () async {
     final store = Store<BoardState>(
         initialState: makeBoard(
             rows: 3,
@@ -139,19 +139,25 @@ void main() {
     final storeTester = StoreTester.from(store);
 
     storeTester
+        .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
+    storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 1, y: 0))));
     storeTester
         .dispatch(RevealPlacesAction(store.state.placeAt(Pos(x: 2, y: 0))));
 
-    TestInfo<BoardState> info = await storeTester.waitAllGetLast(
-        [TogglePlaceAction, RevealPlacesAction, TriggerMineExplosionAction]);
+    TestInfo<BoardState> info = await storeTester.waitAllGetLast([
+      TogglePlaceAction,
+      TogglePlaceAction,
+      RevealPlacesAction,
+      TriggerMineExplosionAction
+    ]);
 
     expect(info.state.board[0].kind, equals(PlaceKind.safe));
     expect(info.state.board[1].kind, equals(PlaceKind.mine));
     expect(info.state.board[2].kind, equals(PlaceKind.mine));
 
-    expect(info.state.board[0].state, equals(PlaceStateType.closed));
-    expect(info.state.board[1].state, equals(PlaceStateType.flagExploded));
+    expect(info.state.board[0].state, equals(PlaceStateType.wronglyFlagged));
+    expect(info.state.board[1].state, equals(PlaceStateType.flagged));
     expect(info.state.board[2].state, equals(PlaceStateType.exploded));
   });
 

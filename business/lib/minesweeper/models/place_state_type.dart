@@ -3,14 +3,14 @@ enum PlaceStateType {
   closed,
   opened,
   flagged,
+  wronglyFlagged,
   exploded,
-  flagExploded,
 }
 
 bool isRevealedState(PlaceStateType state) {
   return const [
     PlaceStateType.opened,
     PlaceStateType.exploded,
-    PlaceStateType.flagExploded
+    PlaceStateType.wronglyFlagged,
   ].contains(state);
 }

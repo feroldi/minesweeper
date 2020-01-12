@@ -89,8 +89,10 @@ class TriggerMineExplosionAction extends BoardBaseAction {
   @override
   BoardState reduce() {
     final triggeredMinesBoard = state.board
-        .map(
-            (place) => place.kind == PlaceKind.mine ? Place.open(place) : place)
+        .map((place) => place.kind == PlaceKind.mine ||
+                place.state == PlaceStateType.flagged
+            ? Place.open(place)
+            : place)
         .toList();
     return state.copyWith(board: triggeredMinesBoard);
   }

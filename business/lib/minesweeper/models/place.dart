@@ -1,10 +1,10 @@
+import 'package:quiver/core.dart' show hash2;
+
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
 import 'package:business/minesweeper/models/pos.dart';
 
-/// A square (or place) in the board which has a [pos] (position) and defines
-/// the [kind], [state] and number of adjacent mines ([neighbourMinesCount]) of
-/// that place.
+/// A square (or place) in the board.
 class Place {
   final Pos pos;
   final PlaceKind kind;
@@ -33,21 +33,27 @@ class Place {
 
   factory Place.open(Place place) {
     final isSafe = place.kind == PlaceKind.safe;
-    switch (place.state) {
-      case PlaceStateType.closed:
-        return place.copyWith(
-            state: isSafe ? PlaceStateType.opened : PlaceStateType.exploded);
-      case PlaceStateType.flagged:
-        return place.copyWith(
-            state:
-                isSafe ? PlaceStateType.opened : PlaceStateType.flagExploded);
-      default:
-        return place;
+    if (place.state == PlaceStateType.closed) {
+      return place.copyWith(
+          state: isSafe ? PlaceStateType.opened : PlaceStateType.exploded);
+    } else if (place.state == PlaceStateType.flagged && isSafe) {
+      return place.copyWith(state: PlaceStateType.wronglyFlagged);
+    } else {
+      return place;
     }
   }
 
   factory Place.toggle(Place place) =>
       place.copyWith(state: _nextPlaceStateType(place.state));
+
+  bool operator ==(Object o) =>
+      o is Place &&
+      o.runtimeType == this.runtimeType &&
+      o.pos == pos &&
+      o.kind == kind &&
+      o.state == state;
+
+  int get hashCode => hash2(hash2(pos, kind), state);
 }
 
 PlaceStateType _nextPlaceStateType(PlaceStateType state) {
@@ -60,4 +66,3 @@ PlaceStateType _nextPlaceStateType(PlaceStateType state) {
       return state;
   }
 }
-
