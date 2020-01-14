@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show describeEnum;
 import 'package:quiver/core.dart' show hash2;
 
 import 'package:business/minesweeper/models/place_kind.dart';
@@ -45,6 +46,11 @@ class Place {
 
   factory Place.toggle(Place place) =>
       place.copyWith(state: _nextPlaceStateType(place.state));
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        "kind": describeEnum(kind),
+        "state": describeEnum(state),
+      };
 
   bool operator ==(Object o) =>
       o is Place &&

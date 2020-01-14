@@ -6,16 +6,29 @@ import 'package:business/minesweeper/models/board_status.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
+import 'package:business/minesweeper/models/player_type.dart';
 import 'package:business/minesweeper/models/pos.dart';
 
 class BoardState {
+  String boardID;
   BoardOptions options;
   List<Place> board;
+  PlayerType playerType;
 
-  BoardState({this.options, this.board});
+  BoardState({this.boardID, this.options, this.board, this.playerType});
 
-  BoardState copyWith({BoardOptions options, List<Place> board}) =>
-      BoardState(options: options ?? this.options, board: board ?? this.board);
+  BoardState copyWith({
+    String boardID,
+    BoardOptions options,
+    List<Place> board,
+    PlayerType playerType,
+  }) =>
+      BoardState(
+        boardID: boardID ?? this.boardID,
+        options: options ?? this.options,
+        board: board ?? this.board,
+        playerType: playerType ?? this.playerType,
+      );
 
   int positionToIndex(Pos pos) => options.dimensions.positionToIndex(pos);
 
@@ -56,6 +69,17 @@ class BoardState {
             kind: kinds[index]));
     return BoardState(
       options: options,
+      board: _computeNeighbourMinesCount(options.dimensions, board),
+    );
+  }
+
+  // TODO: Maybe use only PlaceStateType to update the board? Actually, the
+  // best approach is to represent the board as a map of Pos to Place, so we
+  // can listen to document changes instead of whole document.
+  BoardState updatePlaceStates(List<Place> places) {
+    final board = List<Place>.generate(options.dimensions.length,
+        (index) => places[index].copyWith(pos: indexToPosition(index)));
+    return this.copyWith(
       board: _computeNeighbourMinesCount(options.dimensions, board),
     );
   }

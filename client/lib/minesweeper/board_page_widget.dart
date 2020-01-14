@@ -20,20 +20,25 @@ class BoardPage extends StatelessWidget {
   final int totalMines;
   final List<Place> boardData;
   final BoardStatus gameplayStatus;
+  final String streamingBoardID;
   final Function(Place place) onTileTap;
   final Function(Place place) onTilePress;
   final VoidCallback onPlayerReactionButtonTap;
+  final VoidCallback onCreateSpectatorBoard;
 
   BoardPage({
+    Key key,
     @required this.rows,
     @required this.columns,
     @required this.totalMines,
     @required this.boardData,
     @required this.gameplayStatus,
+    @required this.streamingBoardID,
     @required this.onTileTap,
     @required this.onTilePress,
     @required this.onPlayerReactionButtonTap,
-  });
+    @required this.onCreateSpectatorBoard,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +62,10 @@ class BoardPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             buildBoardHeader(
-                gameplayStatus: gameplayStatus,
-                onPlayerReactionButtonTap: onPlayerReactionButtonTap),
+              gameplayStatus: gameplayStatus,
+              onPlayerReactionButtonTap: onPlayerReactionButtonTap,
+              onCreateSpectatorBoard: onCreateSpectatorBoard,
+            ),
             SizedBox(height: 12.0),
             Expanded(
               child: Container(
@@ -73,6 +80,19 @@ class BoardPage extends StatelessWidget {
                 child: board,
               ),
             ),
+            SizedBox(height: 12.0),
+            Container(
+              height: 48.0,
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(width: 3.0, color: Colors.grey),
+                  left: BorderSide(width: 3.0, color: Colors.grey),
+                  bottom: BorderSide(width: 3.0, color: Colors.grey[100]),
+                  right: BorderSide(width: 3.0, color: Colors.grey[100]),
+                ),
+              ),
+              child: Center(child: SelectableText(streamingBoardID ?? "")),
+            ),
           ],
         ),
       ),
@@ -80,8 +100,11 @@ class BoardPage extends StatelessWidget {
   }
 }
 
-Container buildBoardHeader(
-    {BoardStatus gameplayStatus, VoidCallback onPlayerReactionButtonTap}) {
+Container buildBoardHeader({
+  BoardStatus gameplayStatus,
+  VoidCallback onPlayerReactionButtonTap,
+  VoidCallback onCreateSpectatorBoard,
+}) {
   return Container(
     height: 48.0,
     decoration: BoxDecoration(
@@ -92,15 +115,23 @@ Container buildBoardHeader(
         right: BorderSide(width: 3.0, color: Colors.grey[100]),
       ),
     ),
-    child: Center(
-        child: buildPlayerReactionButton(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        buildPlayerReactionButton(
             gameplayStatus: gameplayStatus,
-            onPlayerReactionButtonTap: onPlayerReactionButtonTap)),
+            onPlayerReactionButtonTap: onPlayerReactionButtonTap),
+        buildCreateSpectatorBoardButton(
+            onCreateSpectatorBoard: onCreateSpectatorBoard),
+      ],
+    ),
   );
 }
 
-GestureDetector buildPlayerReactionButton(
-    {BoardStatus gameplayStatus, VoidCallback onPlayerReactionButtonTap}) {
+GestureDetector buildPlayerReactionButton({
+  BoardStatus gameplayStatus,
+  VoidCallback onPlayerReactionButtonTap,
+}) {
   final playerReaction = Container(
     width: 46.0,
     height: 46.0,
@@ -140,6 +171,29 @@ GestureDetector buildPlayerReactionButton(
   return GestureDetector(
     onTap: onPlayerReactionButtonTap,
     child: playerReaction,
+  );
+}
+
+GestureDetector buildCreateSpectatorBoardButton({
+  VoidCallback onCreateSpectatorBoard,
+}) {
+  final shareButton = Container(
+    width: 46.0,
+    height: 46.0,
+    decoration: BoxDecoration(
+      border: Border(
+        top: BorderSide(width: 5.0, color: Colors.grey[100]),
+        left: BorderSide(width: 5.0, color: Colors.grey[100]),
+        bottom: BorderSide(width: 5.0, color: Colors.grey),
+        right: BorderSide(width: 5.0, color: Colors.grey),
+      ),
+    ),
+    child: Icon(Icons.share, size: 32.0),
+  );
+
+  return GestureDetector(
+    onTap: onCreateSpectatorBoard,
+    child: shareButton,
   );
 }
 

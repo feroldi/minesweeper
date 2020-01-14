@@ -1,7 +1,12 @@
 import 'package:async_redux/async_redux.dart';
 import 'package:test/test.dart';
 
-import 'package:business/minesweeper/actions/board_actions.dart';
+import 'package:business/minesweeper/actions/board_base_action.dart';
+import 'package:business/minesweeper/actions/board_command_action.dart';
+import 'package:business/minesweeper/actions/create_spectator_board_action.dart';
+import 'package:business/minesweeper/actions/reveal_places_action.dart';
+import 'package:business/minesweeper/actions/toggle_place_action.dart';
+import 'package:business/minesweeper/actions/trigger_mine_explosion_action.dart';
 import 'package:business/minesweeper/models/board_dimensions.dart';
 import 'package:business/minesweeper/models/board_state.dart';
 import 'package:business/minesweeper/models/board_status.dart';
@@ -104,6 +109,7 @@ void main() {
 
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
+
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
 
@@ -123,6 +129,7 @@ void main() {
 
     storeTester
         .dispatch(RevealPlacesAction(store.state.placeAt(Pos(x: 0, y: 0))));
+
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
 
@@ -142,8 +149,10 @@ void main() {
 
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
+
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 1, y: 0))));
+
     storeTester
         .dispatch(RevealPlacesAction(store.state.placeAt(Pos(x: 2, y: 0))));
 
@@ -163,7 +172,8 @@ void main() {
     expect(info.state.board[2].state, equals(PlaceStateType.exploded));
   });
 
-  test("Revealing all safe places and flagging all mines mean victory", () async {
+  test("Revealing all safe places and flagging all mines mean victory",
+      () async {
     final store = Store<BoardState>(
         initialState: makeBoard(
             rows: 3, columns: 1, minePositions: <Pos>[Pos(x: 2, y: 0)]));
@@ -173,30 +183,46 @@ void main() {
 
     storeTester
         .dispatch(RevealPlacesAction(store.state.placeAt(Pos(x: 0, y: 0))));
+
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 2, y: 0))));
 
-    TestInfoList<BoardState> infos = await storeTester.waitAll([RevealPlacesAction, TogglePlaceAction]);
+    TestInfoList<BoardState> infos =
+        await storeTester.waitAll([RevealPlacesAction, TogglePlaceAction]);
 
-    expect(infos.get(RevealPlacesAction).state.board[0].kind, equals(PlaceKind.safe));
-    expect(infos.get(RevealPlacesAction).state.board[1].kind, equals(PlaceKind.safe));
-    expect(infos.get(RevealPlacesAction).state.board[2].kind, equals(PlaceKind.mine));
+    expect(infos.get(RevealPlacesAction).state.board[0].kind,
+        equals(PlaceKind.safe));
+    expect(infos.get(RevealPlacesAction).state.board[1].kind,
+        equals(PlaceKind.safe));
+    expect(infos.get(RevealPlacesAction).state.board[2].kind,
+        equals(PlaceKind.mine));
 
-    expect(infos.get(RevealPlacesAction).state.board[0].state, equals(PlaceStateType.opened));
-    expect(infos.get(RevealPlacesAction).state.board[1].state, equals(PlaceStateType.opened));
-    expect(infos.get(RevealPlacesAction).state.board[2].state, equals(PlaceStateType.closed));
+    expect(infos.get(RevealPlacesAction).state.board[0].state,
+        equals(PlaceStateType.opened));
+    expect(infos.get(RevealPlacesAction).state.board[1].state,
+        equals(PlaceStateType.opened));
+    expect(infos.get(RevealPlacesAction).state.board[2].state,
+        equals(PlaceStateType.closed));
 
-    expect(infos.get(RevealPlacesAction).state.checkStatus(), equals(BoardStatus.playing));
+    expect(infos.get(RevealPlacesAction).state.checkStatus(),
+        equals(BoardStatus.playing));
 
-    expect(infos.get(TogglePlaceAction).state.board[0].kind, equals(PlaceKind.safe));
-    expect(infos.get(TogglePlaceAction).state.board[1].kind, equals(PlaceKind.safe));
-    expect(infos.get(TogglePlaceAction).state.board[2].kind, equals(PlaceKind.mine));
+    expect(infos.get(TogglePlaceAction).state.board[0].kind,
+        equals(PlaceKind.safe));
+    expect(infos.get(TogglePlaceAction).state.board[1].kind,
+        equals(PlaceKind.safe));
+    expect(infos.get(TogglePlaceAction).state.board[2].kind,
+        equals(PlaceKind.mine));
 
-    expect(infos.get(TogglePlaceAction).state.board[0].state, equals(PlaceStateType.opened));
-    expect(infos.get(TogglePlaceAction).state.board[1].state, equals(PlaceStateType.opened));
-    expect(infos.get(TogglePlaceAction).state.board[2].state, equals(PlaceStateType.flagged));
+    expect(infos.get(TogglePlaceAction).state.board[0].state,
+        equals(PlaceStateType.opened));
+    expect(infos.get(TogglePlaceAction).state.board[1].state,
+        equals(PlaceStateType.opened));
+    expect(infos.get(TogglePlaceAction).state.board[2].state,
+        equals(PlaceStateType.flagged));
 
-    expect(infos.get(TogglePlaceAction).state.checkStatus(), equals(BoardStatus.victory));
+    expect(infos.get(TogglePlaceAction).state.checkStatus(),
+        equals(BoardStatus.victory));
   });
 
   test("Revealing a mine place means defeat", () async {
@@ -248,11 +274,13 @@ void main() {
 
   test("Flagged places cannot be revealed", () async {
     final store = Store<BoardState>(
-        initialState: makeBoard(rows: 1, columns: 1, minePositions: <Pos>[]));
+      initialState: makeBoard(rows: 1, columns: 1, minePositions: <Pos>[]),
+    );
     final storeTester = StoreTester.from(store);
 
     storeTester
         .dispatch(TogglePlaceAction(store.state.placeAt(Pos(x: 0, y: 0))));
+
     storeTester
         .dispatch(RevealPlacesAction(store.state.placeAt(Pos(x: 0, y: 0))));
 

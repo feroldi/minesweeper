@@ -1,48 +1,22 @@
 import 'dart:collection';
 
 import 'package:async_redux/async_redux.dart';
-import 'package:meta/meta.dart';
 
-import 'package:business/minesweeper/models/board_options.dart';
-import 'package:business/minesweeper/models/board_state.dart';
+import 'package:business/minesweeper/actions/board_command_action.dart';
+import 'package:business/minesweeper/actions/trigger_mine_explosion_action.dart';
 import 'package:business/minesweeper/models/board_status.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
 import 'package:business/minesweeper/models/pos.dart';
 
-abstract class BoardBaseAction extends ReduxAction<BoardState> {
-  int positionToIndex(Pos pos) => state.positionToIndex(pos);
-  Pos indexToPosition(int index) => state.indexToPosition(index);
-  bool isPosInBounds(Pos pos) => state.isPosInBounds(pos);
-
-  Iterable<Place> findPlaceNeighbours(Place place) =>
-      state.findPlaceNeighbours(place);
-}
-
-class TogglePlaceAction extends BoardBaseAction {
-  Place place;
-
-  TogglePlaceAction(this.place) : assert(place != null);
-
-  @override
-  BoardState reduce() {
-    if (state.checkStatus() != BoardStatus.playing) return null;
-
-    final newBoard = List.of(state.board);
-    final originIndex = positionToIndex(place.pos);
-    newBoard[originIndex] = Place.toggle(newBoard[originIndex]);
-    return state.copyWith(board: newBoard);
-  }
-}
-
-class RevealPlacesAction extends BoardBaseAction {
+class RevealPlacesAction extends BoardCommandAction {
   Place origin;
 
   RevealPlacesAction(this.origin) : assert(origin != null);
 
   @override
-  BoardState reduce() {
+  List<Place> reduceBoard() {
     if (state.checkStatus() != BoardStatus.playing) return null;
 
     if (origin.state != PlaceStateType.closed) return null;
@@ -85,32 +59,6 @@ class RevealPlacesAction extends BoardBaseAction {
     state.board.asMap().forEach(
         (index, place) => newBoard.add(revealedPlaces[index] ?? place));
 
-    return state.copyWith(
-      board: newBoard,
-    );
-  }
-}
-
-class TriggerMineExplosionAction extends BoardBaseAction {
-  @override
-  BoardState reduce() {
-    final triggeredMinesBoard = state.board
-        .map((place) => place.kind == PlaceKind.mine ||
-                place.state == PlaceStateType.flagged
-            ? Place.open(place)
-            : place)
-        .toList();
-    return state.copyWith(board: triggeredMinesBoard);
-  }
-}
-
-class CreateRandomBoardAction extends BoardBaseAction {
-  BoardOptions options;
-
-  CreateRandomBoardAction({this.options});
-
-  @override
-  BoardState reduce() {
-    return BoardState.generateRandomBoard(options: options ?? state.options);
+    return newBoard;
   }
 }
