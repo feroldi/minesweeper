@@ -46,11 +46,12 @@ class ManageSpectatorBoardStreamAction extends ReduxAction<BoardState> {
 
         dispatch(UpdateSpectatorBoardAction(board));
       });
+      return state.copyWith(boardID: boardID, playerType: PlayerType.spectator);
     } else {
       boardStreamSub.cancel();
     }
 
-    return state.copyWith(playerType: PlayerType.spectator);
+    return null;
   }
 }
 
