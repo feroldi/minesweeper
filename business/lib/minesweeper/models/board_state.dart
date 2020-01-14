@@ -15,7 +15,12 @@ class BoardState {
   List<Place> board;
   PlayerType playerType;
 
-  BoardState({this.boardID, this.options, this.board, this.playerType});
+  BoardState({
+    this.boardID,
+    this.options,
+    this.board,
+    this.playerType = PlayerType.player,
+  });
 
   BoardState copyWith({
     String boardID,
@@ -73,9 +78,6 @@ class BoardState {
     );
   }
 
-  // TODO: Maybe use only PlaceStateType to update the board? Actually, the
-  // best approach is to represent the board as a map of Pos to Place, so we
-  // can listen to document changes instead of whole document.
   BoardState updatePlaceStates(List<Place> places) {
     final board = List<Place>.generate(options.dimensions.length,
         (index) => places[index].copyWith(pos: indexToPosition(index)));

@@ -4,8 +4,14 @@ import 'package:business/minesweeper/actions/board_command_action.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
+import 'package:business/minesweeper/models/player_type.dart';
 
 class TriggerMineExplosionAction extends BoardCommandAction {
+  @override
+  List<PlayerType> whoCanExecute() {
+    return const [PlayerType.player, PlayerType.spectator];
+  }
+
   @override
   List<Place> reduceBoard() {
     final triggeredMinesBoard = state.board

@@ -8,12 +8,18 @@ import 'package:business/minesweeper/models/board_status.dart';
 import 'package:business/minesweeper/models/place.dart';
 import 'package:business/minesweeper/models/place_kind.dart';
 import 'package:business/minesweeper/models/place_state_type.dart';
+import 'package:business/minesweeper/models/player_type.dart';
 import 'package:business/minesweeper/models/pos.dart';
 
 class RevealPlacesAction extends BoardCommandAction {
   Place origin;
 
   RevealPlacesAction(this.origin) : assert(origin != null);
+
+  @override
+  List<PlayerType> whoCanExecute() {
+    return const [PlayerType.player];
+  }
 
   @override
   List<Place> reduceBoard() {
