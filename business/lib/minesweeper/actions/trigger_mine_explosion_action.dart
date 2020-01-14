@@ -8,8 +8,8 @@ import 'package:business/minesweeper/models/player_type.dart';
 
 class TriggerMineExplosionAction extends BoardCommandAction {
   @override
-  List<PlayerType> whoCanExecute() {
-    return const [PlayerType.player, PlayerType.spectator];
+  Set<PlayerType> whoCanExecute() {
+    return const {PlayerType.player, PlayerType.spectator};
   }
 
   @override

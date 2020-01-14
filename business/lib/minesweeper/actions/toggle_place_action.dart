@@ -11,8 +11,8 @@ class TogglePlaceAction extends BoardCommandAction {
   TogglePlaceAction(this.place) : assert(place != null);
 
   @override
-  List<PlayerType> whoCanExecute() {
-    return const [PlayerType.player];
+  Set<PlayerType> whoCanExecute() {
+    return const {PlayerType.player};
   }
 
   @override

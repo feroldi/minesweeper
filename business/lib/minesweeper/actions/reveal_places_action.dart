@@ -17,8 +17,8 @@ class RevealPlacesAction extends BoardCommandAction {
   RevealPlacesAction(this.origin) : assert(origin != null);
 
   @override
-  List<PlayerType> whoCanExecute() {
-    return const [PlayerType.player];
+  Set<PlayerType> whoCanExecute() {
+    return const {PlayerType.player};
   }
 
   @override
