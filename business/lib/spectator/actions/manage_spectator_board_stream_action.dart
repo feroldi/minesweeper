@@ -62,6 +62,7 @@ class ManageSpectatorBoardStreamAction extends AppBaseAction {
             boardFirstSnapshot.data.cast<String, dynamic>()),
       );
     } else {
+      await Future.value(null);
       boardStreamSub.cancel();
     }
 
