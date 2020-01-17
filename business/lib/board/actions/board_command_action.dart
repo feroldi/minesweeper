@@ -14,8 +14,10 @@ abstract class BoardCommandAction extends BoardBaseAction {
   BoardState reduceBoardState() {
     final board = processBoardData();
 
-    if (boardState.boardID != null && board != null) {
-      dispatch(UpdateFirestoreBoardAction(board: board));
+    if (board == null) return null;
+
+    if (boardState.boardID != null) {
+      dispatch(UpdateFirestoreBoardAction(boardData: board));
     }
 
     return boardState.copyWith(board: board);

@@ -7,9 +7,9 @@ import 'package:business/board/models/board_state.dart';
 import 'package:business/board/models/place.dart';
 
 class UpdateFirestoreBoardAction extends AppBaseAction {
-  final List<Place> board;
+  List<Place> boardData;
 
-  UpdateFirestoreBoardAction({this.board}) : assert(board != null);
+  UpdateFirestoreBoardAction({this.boardData});
 
   @override
   Future<AppState> reduce() async {
@@ -17,7 +17,7 @@ class UpdateFirestoreBoardAction extends AppBaseAction {
         .collection("boards")
         .document(boardState.boardID)
         .updateData({
-      "board": board.map((place) => place.toJson()).toList(),
+      "board": boardData.map((place) => place.toJson()).toList(),
     });
     return null;
   }
