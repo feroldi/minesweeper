@@ -1,39 +1,61 @@
 import 'dart:math';
 
-import 'package:business/minesweeper/models/board_dimensions.dart';
-import 'package:business/minesweeper/models/board_options.dart';
-import 'package:business/minesweeper/models/board_status.dart';
-import 'package:business/minesweeper/models/place.dart';
-import 'package:business/minesweeper/models/place_kind.dart';
-import 'package:business/minesweeper/models/place_state_type.dart';
-import 'package:business/minesweeper/models/player_type.dart';
-import 'package:business/minesweeper/models/pos.dart';
+import 'package:business/board/models/board_dimensions.dart';
+import 'package:business/board/models/board_options.dart';
+import 'package:business/board/models/board_status.dart';
+import 'package:business/board/models/place.dart';
+import 'package:business/board/models/place_kind.dart';
+import 'package:business/board/models/place_state_type.dart';
+import 'package:business/board/models/pos.dart';
 
+/// A game board state that holds board configurations and places.
 class BoardState {
+  /// The game board Firestore document ID, if any.
   String boardID;
+
+  /// The board's dimensions and number of mines.
   BoardOptions options;
+
+  /// The board's data.
   List<Place> board;
-  PlayerType playerType;
 
   BoardState({
     this.boardID,
     this.options,
     this.board,
-    this.playerType = PlayerType.player,
   });
+
+  static BoardState initialState() => null;
 
   BoardState copyWith({
     String boardID,
     BoardOptions options,
     List<Place> board,
-    PlayerType playerType,
   }) =>
       BoardState(
         boardID: boardID ?? this.boardID,
         options: options ?? this.options,
         board: board ?? this.board,
-        playerType: playerType ?? this.playerType,
       );
+
+  factory BoardState.fromJson(Map<String, dynamic> snap) => BoardState(
+        options: BoardOptions(
+            dimensions: BoardDimensions(
+              rows: snap["rows"],
+              columns: snap["columns"],
+            ),
+            numMines: snap["mines"]),
+        board: List.from(snap["board"])
+            .map((datum) => Place.fromJson(datum.cast<String, dynamic>()))
+            .toList(),
+      );
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        "rows": options.dimensions.rows,
+        "columns": options.dimensions.columns,
+        "mines": options.numMines,
+        "board": board.map((place) => place.toJson()).toList(),
+      };
 
   int positionToIndex(Pos pos) => options.dimensions.positionToIndex(pos);
 
@@ -43,6 +65,7 @@ class BoardState {
 
   Place placeAt(Pos pos) => board[positionToIndex(pos)];
 
+  /// Creates a board with mines at the positions given by [minePositions].
   factory BoardState.generateBoardFromMinePositions(
       {BoardDimensions dimensions, List<Pos> minePositions}) {
     final board = List<Place>.generate(dimensions.length,
@@ -63,6 +86,7 @@ class BoardState {
     );
   }
 
+  /// Creates a board with mines put at random positions.
   factory BoardState.generateRandomBoard({BoardOptions options, Random rand}) {
     final kinds = List<PlaceKind>.generate(options.dimensions.length,
         (index) => index < options.numMines ? PlaceKind.mine : PlaceKind.safe);
@@ -78,17 +102,10 @@ class BoardState {
     );
   }
 
-  BoardState updatePlaceStates(List<Place> places) {
-    final board = List<Place>.generate(options.dimensions.length,
-        (index) => places[index].copyWith(pos: indexToPosition(index)));
-    return this.copyWith(
-      board: _computeNeighbourMinesCount(options.dimensions, board),
-    );
-  }
-
   Iterable<Place> findPlaceNeighbours(Place place) =>
       _findPlaceNeighbours(options.dimensions, board, place);
 
+  /// Computes the game board's status: playing, victory or defeat.
   BoardStatus checkStatus() {
     final anyTriggeredMine = board.any((place) =>
         place.kind == PlaceKind.mine && isRevealedState(place.state));

@@ -1,13 +1,13 @@
 import 'package:test/test.dart';
 
-import 'package:business/minesweeper/models/board_dimensions.dart';
-import 'package:business/minesweeper/models/board_options.dart';
-import 'package:business/minesweeper/models/board_state.dart';
-import 'package:business/minesweeper/models/board_status.dart';
-import 'package:business/minesweeper/models/place.dart';
-import 'package:business/minesweeper/models/place_kind.dart';
-import 'package:business/minesweeper/models/place_state_type.dart';
-import 'package:business/minesweeper/models/pos.dart';
+import 'package:business/board/models/board_dimensions.dart';
+import 'package:business/board/models/board_options.dart';
+import 'package:business/board/models/board_state.dart';
+import 'package:business/board/models/board_status.dart';
+import 'package:business/board/models/place.dart';
+import 'package:business/board/models/place_kind.dart';
+import 'package:business/board/models/place_state_type.dart';
+import 'package:business/board/models/pos.dart';
 
 BoardState makeBoard({int rows, int columns, List<Pos> minePositions}) {
   return BoardState.generateBoardFromMinePositions(

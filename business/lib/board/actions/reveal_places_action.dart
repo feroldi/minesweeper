@@ -2,14 +2,13 @@ import 'dart:collection';
 
 import 'package:async_redux/async_redux.dart';
 
-import 'package:business/minesweeper/actions/board_command_action.dart';
-import 'package:business/minesweeper/actions/trigger_mine_explosion_action.dart';
-import 'package:business/minesweeper/models/board_status.dart';
-import 'package:business/minesweeper/models/place.dart';
-import 'package:business/minesweeper/models/place_kind.dart';
-import 'package:business/minesweeper/models/place_state_type.dart';
-import 'package:business/minesweeper/models/player_type.dart';
-import 'package:business/minesweeper/models/pos.dart';
+import 'package:business/board/actions/board_command_action.dart';
+import 'package:business/board/actions/trigger_mine_explosion_action.dart';
+import 'package:business/board/models/board_status.dart';
+import 'package:business/board/models/place.dart';
+import 'package:business/board/models/place_kind.dart';
+import 'package:business/board/models/place_state_type.dart';
+import 'package:business/board/models/pos.dart';
 
 class RevealPlacesAction extends BoardCommandAction {
   Place origin;
@@ -17,14 +16,7 @@ class RevealPlacesAction extends BoardCommandAction {
   RevealPlacesAction(this.origin) : assert(origin != null);
 
   @override
-  Set<PlayerType> whoCanExecute() {
-    return const {PlayerType.player};
-  }
-
-  @override
-  List<Place> reduceBoard() {
-    if (state.checkStatus() != BoardStatus.playing) return null;
-
+  List<Place> processBoardData() {
     if (origin.state != PlaceStateType.closed) return null;
 
     if (origin.kind == PlaceKind.mine) {
@@ -36,10 +28,9 @@ class RevealPlacesAction extends BoardCommandAction {
     final visitedPlaces = HashSet<Pos>();
     final revealedPlaces = Map<int, Place>();
 
-    // A BFS in the wild? My bachelor is finally starting to pay off! /s
     while (queue.isNotEmpty) {
       final placePos = queue.removeFirst();
-      final place = state.board[positionToIndex(placePos)];
+      final place = boardState.board[positionToIndex(placePos)];
 
       if (place.state == PlaceStateType.closed &&
           place.kind != PlaceKind.mine) {
@@ -62,7 +53,7 @@ class RevealPlacesAction extends BoardCommandAction {
     }
 
     final newBoard = List<Place>();
-    state.board.asMap().forEach(
+    boardState.board.asMap().forEach(
         (index, place) => newBoard.add(revealedPlaces[index] ?? place));
 
     return newBoard;

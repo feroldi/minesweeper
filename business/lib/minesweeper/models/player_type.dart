@@ -1,4 +1,0 @@
-enum PlayerType {
-  player,
-  spectator,
-}

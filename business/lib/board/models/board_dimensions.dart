@@ -1,9 +1,12 @@
 import 'dart:math';
 
-import 'package:business/minesweeper/models/pos.dart';
+import 'package:business/board/models/pos.dart';
 
-/// An index-to-position (and vice-versa) converter based on a board's number
-/// of [rows] and [columns].
+/// An index-to-position (and vice-versa) converter.
+///
+/// The dimensions of the game board are given by [rows] and [columns].
+/// Conversion of indices into positions and back are done in a row-major
+/// fashion.
 class BoardDimensions {
   final int rows;
   final int columns;
@@ -27,4 +30,3 @@ class BoardDimensions {
     return Pos(x: index % rows, y: index ~/ rows);
   }
 }
-
